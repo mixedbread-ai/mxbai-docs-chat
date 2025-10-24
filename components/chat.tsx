@@ -17,14 +17,15 @@ import {
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
+import { ChatScrollArea } from "@/components/chat-scroll-area";
 import { ConversationMessage } from "@/components/conversation-message";
 import { MxbaiLogoIcon } from "@/components/mxbai-logo-icon";
 import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = [
-  "How do I set up a new Next.js app?",
+  "What are Cache Components?",
   "How do I fetch data in Server Components?",
-  "How do I create parallel routes in App Router?",
+  "How do I create Parallel Routes in App Router?",
 ];
 
 export function Chat() {
@@ -86,57 +87,59 @@ export function Chat() {
   );
 
   return (
-    <div className="w-full">
-      <div
-        className={cn(
-          "flex flex-col h-svh justify-center gap-6",
-          messages.length > 0 && "hidden",
-        )}
-      >
-        <div className="flex items-center justify-center gap-3">
-          <MxbaiLogoIcon className="size-12" />
-          <h1 className="text-4xl tracking-tight">Mxbai Chat</h1>
+    <ChatScrollArea messages={messages} isStreaming={status === "streaming"}>
+      <div className="max-w-[95vw] w-2xl mx-auto">
+        <div
+          className={cn(
+            "flex flex-col h-svh justify-center gap-6",
+            messages.length > 0 && "hidden",
+          )}
+        >
+          <div className="flex items-center justify-center gap-3">
+            <MxbaiLogoIcon className="size-12" />
+            <h1 className="text-4xl tracking-tight">Mxbai Chat</h1>
+          </div>
+
+          <div className="relative">
+            <div className="-top-4 absolute inset-x-0 h-4 bg-linear-to-b from-transparent via-40% via-popover/30 to-popover/70" />
+            {promptInput}
+          </div>
+
+          <Suggestions className="flex-wrap w-full justify-center">
+            {SUGGESTIONS.map((suggestion) => (
+              <Suggestion
+                key={suggestion}
+                onClick={handleSuggestionClick}
+                suggestion={suggestion}
+                className="rounded-md px-3 text-muted-foreground"
+              />
+            ))}
+          </Suggestions>
         </div>
 
-        <div className="relative">
-          <div className="-top-4 absolute inset-x-0 h-4 bg-linear-to-b from-transparent via-40% via-popover/30 to-popover/70" />
-          {promptInput}
-        </div>
+        <div className={cn(messages.length === 0 && "hidden")}>
+          <Conversation>
+            <ConversationContent className="p-0 pt-6 pb-32">
+              {messages.map((message, index) => {
+                return (
+                  <ConversationMessage
+                    key={message.id}
+                    message={message}
+                    chatStatus={status}
+                    isLastMessage={index === messages.length - 1}
+                  />
+                );
+              })}
+            </ConversationContent>
+            <ConversationScrollButton />
+          </Conversation>
 
-        <Suggestions className="flex-wrap w-full justify-center">
-          {SUGGESTIONS.map((suggestion) => (
-            <Suggestion
-              key={suggestion}
-              onClick={handleSuggestionClick}
-              suggestion={suggestion}
-              className="rounded-md px-3 text-muted-foreground"
-            />
-          ))}
-        </Suggestions>
+          <div className="fixed bottom-2 w-2xl max-w-[95vw]">
+            <div className="-top-4 absolute inset-x-0 h-4 bg-linear-to-b from-transparent via-40% via-popover/30 to-popover/70" />
+            {promptInput}
+          </div>
+        </div>
       </div>
-
-      <div className={cn(messages.length === 0 && "hidden")}>
-        <Conversation>
-          <ConversationContent className="p-0 pt-6 pb-32">
-            {messages.map((message, index) => {
-              return (
-                <ConversationMessage
-                  key={message.id}
-                  message={message}
-                  chatStatus={status}
-                  isLastMessage={index === messages.length - 1}
-                />
-              );
-            })}
-          </ConversationContent>
-          <ConversationScrollButton />
-        </Conversation>
-
-        <div className="fixed bottom-2 w-2xl max-w-[95vw]">
-          <div className="-top-4 absolute inset-x-0 h-4 bg-linear-to-b from-transparent via-40% via-popover/30 to-popover/70" />
-          {promptInput}
-        </div>
-      </div>
-    </div>
+    </ChatScrollArea>
   );
 }
