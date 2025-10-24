@@ -2,9 +2,9 @@
 
 import { ArrowDownIcon } from "lucide-react";
 import type { ComponentProps } from "react";
-import { useCallback } from "react";
-import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
+import { StickToBottom } from "use-stick-to-bottom";
 import { Button } from "@/components/ui/button";
+import { scrollToBottom, useAtBottom } from "@/lib/chat";
 import { cn } from "@/lib/utils";
 
 export type ConversationProps = ComponentProps<typeof StickToBottom>;
@@ -71,27 +71,26 @@ export const ConversationScrollButton = ({
   className,
   ...props
 }: ConversationScrollButtonProps) => {
-  const { isAtBottom, scrollToBottom } = useStickToBottomContext();
-
-  const handleScrollToBottom = useCallback(() => {
-    scrollToBottom();
-  }, [scrollToBottom]);
+  const isAtBottom = useAtBottom(10);
 
   return (
-    !isAtBottom && (
-      <Button
-        className={cn(
-          "absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full",
-          className,
-        )}
-        onClick={handleScrollToBottom}
-        size="icon"
-        type="button"
-        variant="outline"
-        {...props}
-      >
-        <ArrowDownIcon className="size-4" />
-      </Button>
-    )
+    <Button
+      className={cn(
+        "absolute bottom-4 left-[50%] translate-x-[-50%] rounded-full transition-all duration-200 dark:bg-muted dark:hover:bg-background",
+        isAtBottom
+          ? "pointer-events-none translate-y-2 opacity-0"
+          : "translate-y-0 opacity-100",
+        className,
+      )}
+      data-is-at-bottom={isAtBottom}
+      onClick={() => scrollToBottom()}
+      size="icon"
+      type="button"
+      variant="outline"
+      {...props}
+    >
+      <span className="sr-only">Scroll to bottom</span>
+      <ArrowDownIcon className="size-4" />
+    </Button>
   );
 };

@@ -1,8 +1,8 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
-import { useRef, useState } from "react";
+import { type ChatStatus, DefaultChatTransport } from "ai";
+import { useEffect, useRef, useState } from "react";
 import {
   Conversation,
   ConversationContent,
@@ -29,8 +29,6 @@ const SUGGESTIONS = [
 ];
 
 export function Chat() {
-  const [input, setInput] = useState("");
-  const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
@@ -41,50 +39,9 @@ export function Chat() {
     },
   });
 
-  function handleSubmit(
-    _message: PromptInputMessage,
-    e: React.FormEvent<HTMLFormElement>,
-  ) {
-    e.preventDefault();
-    if (input.trim()) {
-      sendMessage({ text: input });
-      setInput("");
-      (e.target as HTMLFormElement).reset();
-      // Reset the height of the textarea
-      if (chatInputRef.current) chatInputRef.current.style.height = "auto";
-    }
-  }
-
   function handleSuggestionClick(suggestion: string) {
     sendMessage({ text: suggestion });
   }
-
-  const promptInput = (
-    <PromptInput
-      onSubmit={handleSubmit}
-      className="background backdrop-blur-md supports-backdrop-filter:bg-background/80"
-    >
-      <PromptInputBody>
-        <PromptInputTextarea
-          ref={chatInputRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask a question..."
-          className="thin-scrollbar min-h-11"
-        />
-      </PromptInputBody>
-      <PromptInputFooter className="justify-end">
-        <PromptInputSubmit
-          type={status === "streaming" ? "button" : "submit"}
-          status={status}
-          disabled={input.length === 0 && status !== "streaming"}
-          onClick={() => {
-            if (status === "streaming") stop();
-          }}
-        />
-      </PromptInputFooter>
-    </PromptInput>
-  );
 
   return (
     <ChatScrollArea messages={messages} isStreaming={status === "streaming"}>
@@ -102,7 +59,11 @@ export function Chat() {
 
           <div className="relative">
             <div className="-top-4 absolute inset-x-0 h-4 bg-linear-to-b from-transparent via-40% via-popover/30 to-popover/70" />
-            {promptInput}
+            <PromptInputForm
+              sendMessage={sendMessage}
+              status={status}
+              stop={stop}
+            />
           </div>
 
           <Suggestions className="flex-wrap w-full justify-center">
@@ -131,15 +92,83 @@ export function Chat() {
                 );
               })}
             </ConversationContent>
-            <ConversationScrollButton />
+            <ConversationScrollButton className="fixed bottom-36" />
           </Conversation>
 
           <div className="fixed bottom-2 w-2xl max-w-[95vw]">
             <div className="-top-4 absolute inset-x-0 h-4 bg-linear-to-b from-transparent via-40% via-popover/30 to-popover/70" />
-            {promptInput}
+            <PromptInputForm
+              sendMessage={sendMessage}
+              status={status}
+              stop={stop}
+            />
           </div>
         </div>
       </div>
     </ChatScrollArea>
+  );
+}
+
+interface PromptInputFormProps {
+  sendMessage: ReturnType<typeof useChat>["sendMessage"];
+  status: ChatStatus;
+  stop: () => void;
+}
+
+function PromptInputForm({ sendMessage, status, stop }: PromptInputFormProps) {
+  const [input, setInput] = useState("");
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
+
+  function handleSubmit(
+    _message: PromptInputMessage,
+    e: React.FormEvent<HTMLFormElement>,
+  ) {
+    e.preventDefault();
+    if (input.trim()) {
+      sendMessage({ text: input });
+      setInput("");
+      (e.target as HTMLFormElement).reset();
+      // Reset the height of the textarea
+      if (chatInputRef.current) chatInputRef.current.style.height = "auto";
+    }
+  }
+
+  useEffect(() => {
+    const formElement = chatInputRef.current?.closest("form");
+
+    function focusInput() {
+      chatInputRef.current?.focus();
+    }
+
+    formElement?.addEventListener("click", focusInput);
+
+    return () => formElement?.removeEventListener("click", focusInput);
+  }, []);
+
+  return (
+    <PromptInput
+      onSubmit={handleSubmit}
+      className="background backdrop-blur-md supports-backdrop-filter:bg-background/80"
+    >
+      <PromptInputBody>
+        <PromptInputTextarea
+          ref={chatInputRef}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask a question..."
+          className="thin-scrollbar min-h-11"
+        />
+      </PromptInputBody>
+      <PromptInputFooter className="justify-end">
+        <PromptInputSubmit
+          type={status === "streaming" ? "button" : "submit"}
+          status={status}
+          disabled={input.trim().length === 0 && status !== "streaming"}
+          onClick={() => {
+            if (status === "streaming") stop();
+          }}
+        />
+      </PromptInputFooter>
+    </PromptInput>
   );
 }
