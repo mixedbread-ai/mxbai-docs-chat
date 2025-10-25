@@ -1,12 +1,9 @@
-import type { LucideProps } from "lucide-react";
-
-export const MxbaiLogoIcon = (props: LucideProps) => (
+export const MxbaiLogoIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
     viewBox="0 0 2020 1130"
-    role="img"
-    aria-label="Mxbai Logo"
+    aria-hidden="true"
     {...props}
   >
     <path

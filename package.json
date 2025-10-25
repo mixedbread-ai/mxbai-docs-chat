@@ -1,5 +1,5 @@
 {
-  "name": "mxbai-chat",
+  "name": "mxbai-docs-chat",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -34,6 +34,7 @@
     "motion": "^12.23.24",
     "nanoid": "^5.1.6",
     "next": "16.0.0",
+    "next-themes": "^0.4.6",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-markdown": "^10.1.0",

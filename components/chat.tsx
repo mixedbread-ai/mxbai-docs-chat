@@ -19,7 +19,6 @@ import {
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import { ChatScrollArea } from "@/components/chat-scroll-area";
 import { ConversationMessage } from "@/components/conversation-message";
-import { MxbaiLogoIcon } from "@/components/mxbai-logo-icon";
 import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = [
@@ -52,13 +51,11 @@ export function Chat() {
             messages.length > 0 && "hidden",
           )}
         >
-          <div className="flex items-center justify-center gap-3">
-            <MxbaiLogoIcon className="size-12" />
-            <h1 className="text-4xl tracking-tight">Mxbai Chat</h1>
-          </div>
+          <h1 className="text-4xl text-center tracking-tight">
+            Next.js Docs Chat
+          </h1>
 
           <div className="relative">
-            <div className="-top-4 absolute inset-x-0 h-4 bg-linear-to-b from-transparent via-40% via-popover/30 to-popover/70" />
             <PromptInputForm
               sendMessage={sendMessage}
               status={status}
@@ -80,7 +77,7 @@ export function Chat() {
 
         <div className={cn(messages.length === 0 && "hidden")}>
           <Conversation>
-            <ConversationContent className="p-0 pt-6 pb-32">
+            <ConversationContent className="p-0 pt-12 pb-32">
               {messages.map((message, index) => {
                 return (
                   <ConversationMessage
@@ -96,7 +93,7 @@ export function Chat() {
           </Conversation>
 
           <div className="fixed bottom-2 w-2xl max-w-[95vw]">
-            <div className="-top-4 absolute inset-x-0 h-4 bg-linear-to-b from-transparent via-40% via-popover/30 to-popover/70" />
+            <div className="-top-4 absolute inset-x-0 h-4 bg-linear-to-b from-transparent via-40% via-background/30 to-background/70" />
             <PromptInputForm
               sendMessage={sendMessage}
               status={status}

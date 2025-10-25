@@ -1,7 +1,7 @@
 import type { UIMessage } from "ai";
 import { cva, type VariantProps } from "class-variance-authority";
 import type { ComponentProps, HTMLAttributes } from "react";
-import { MxbaiLogoIcon } from "@/components/mxbai-logo-icon";
+import { MxbaiLogoIcon } from "@/components/icons/mxbai-logo-icon";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
