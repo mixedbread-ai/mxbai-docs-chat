@@ -2,7 +2,7 @@
 
 import { CheckIcon, CopyIcon } from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactNode } from "react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import {
   oneDark,
@@ -115,6 +115,7 @@ export const CodeBlockCopyButton = ({
 }: CodeBlockCopyButtonProps) => {
   const [isCopied, setIsCopied] = useState(false);
   const { code } = useContext(CodeBlockContext);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const copyToClipboard = async () => {
     if (typeof window === "undefined" || !navigator.clipboard.writeText) {
@@ -126,13 +127,19 @@ export const CodeBlockCopyButton = ({
       await navigator.clipboard.writeText(code);
       setIsCopied(true);
       onCopy?.();
-      setTimeout(() => setIsCopied(false), timeout);
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        setIsCopied(false);
+        timeoutRef.current = null;
+      }, timeout);
     } catch (error) {
       onError?.(error as Error);
     }
   };
-
-  const Icon = isCopied ? CheckIcon : CopyIcon;
 
   return (
     <Button
@@ -145,7 +152,29 @@ export const CodeBlockCopyButton = ({
       variant="ghost"
       {...props}
     >
-      {children ?? <Icon size={14} />}
+      {children ? (
+        children
+      ) : (
+        <>
+          <CheckIcon
+            className={cn(
+              "size-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+              isCopied
+                ? "opacity-100 scale-100 blur-none"
+                : "opacity-0 scale-50 blur-xs",
+            )}
+          />
+          <CopyIcon
+            className={cn(
+              "size-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+              isCopied
+                ? "opacity-0 scale-50 blur-xs"
+                : "opacity-100 scale-100 blur-none",
+            )}
+          />
+        </>
+      )}
+      <span className="sr-only">{isCopied ? "Copied" : "Copy"}</span>
     </Button>
   );
 };

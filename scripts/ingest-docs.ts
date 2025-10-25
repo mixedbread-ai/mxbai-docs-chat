@@ -1,4 +1,5 @@
 import Mixedbread from "@mixedbread/sdk";
+import matter from "gray-matter";
 import pLimit from "p-limit";
 
 interface GitHubTreeResponse {
@@ -17,6 +18,22 @@ const VALID_EXTENSIONS = [".md", ".mdx"];
 const mxbai = new Mixedbread({
   apiKey: process.env.MXBAI_API_KEY,
 });
+
+function constructSourceUrl(path: string) {
+  let urlPath = path;
+
+  // Remove numeric prefixes like '01-', '03-' from each segment
+  urlPath = urlPath
+    .split("/")
+    .map((segment) => {
+      return segment.replace(/^\d+-/, "");
+    })
+    .join("/");
+
+  urlPath = urlPath.replace(/\.(md|mdx)$/, "");
+
+  return `https://nextjs.org/${urlPath}`;
+}
 
 function getGitHubHeaders() {
   const headers: Record<string, string> = {
@@ -43,12 +60,12 @@ async function getRepoTree(
 
   if (!response.ok) {
     if (response.status === 404) {
-      console.error(`❌ Branch '${branch}' not found`);
+      console.error(`✗ Branch '${branch}' not found`);
       return null;
     }
     if (response.status === 403) {
       console.error(
-        `❌ GitHub API rate limit exceeded. ${
+        `✗ GitHub API rate limit exceeded. ${
           process.env.GITHUB_TOKEN
             ? "Try again later."
             : "Add a GITHUB_TOKEN to your .env for higher limits."
@@ -56,7 +73,7 @@ async function getRepoTree(
       );
       return null;
     }
-    console.error(`❌ Failed to fetch tree: ${response.statusText}`);
+    console.error(`✗ Failed to fetch tree: ${response.statusText}`);
     return null;
   }
 
@@ -81,7 +98,7 @@ async function getFileContent(
   if (!response.ok) {
     if (response.status === 403) {
       console.error(
-        `❌ GitHub API rate limit exceeded. ${
+        `✗ GitHub API rate limit exceeded. ${
           process.env.GITHUB_TOKEN
             ? "Try again later."
             : "Add a GITHUB_TOKEN to your .env for higher limits."
@@ -109,6 +126,8 @@ async function uploadToStore(
     files.map((file) =>
       limit(async () => {
         try {
+          const parsed = matter(file.content);
+
           const blob = new Blob([file.content], { type: "text/markdown" });
           const filename = file.path.split("/").pop() || "file.mdx";
           const fileObj = new File([blob], filename, { type: "text/markdown" });
@@ -116,6 +135,12 @@ async function uploadToStore(
           await mxbai.stores.files.uploadAndPoll({
             storeIdentifier: storeId,
             file: fileObj,
+            body: {
+              metadata: {
+                source_url: constructSourceUrl(file.path),
+                ...parsed.data,
+              },
+            },
           });
 
           uploadedCount++;
@@ -126,7 +151,7 @@ async function uploadToStore(
         } catch (error) {
           failedCount++;
           console.error(
-            `⚠️  Failed to upload ${file.path}: ${error instanceof Error ? error.message : "Unknown error"}`,
+            `⚠  Failed to upload ${file.path}: ${error instanceof Error ? error.message : "Unknown error"}`,
           );
         }
       }),
@@ -142,13 +167,13 @@ async function main() {
   console.log("🚀 Starting documentation ingestion...\n");
 
   if (!process.env.MXBAI_API_KEY) {
-    console.error("❌ MXBAI_API_KEY environment variable is not set");
+    console.error("✗ MXBAI_API_KEY environment variable is not set");
     console.log("Please add MXBAI_API_KEY to your .env file");
     process.exit(1);
   }
 
   if (!process.env.MXBAI_STORE_ID) {
-    console.error("❌ MXBAI_STORE_ID environment variable is not set");
+    console.error("✗ MXBAI_STORE_ID environment variable is not set");
     console.log("Please add MXBAI_STORE_ID to your .env file");
     process.exit(1);
   }
@@ -173,7 +198,7 @@ async function main() {
   console.log(`✓ Found ${docFiles.length} documentation files\n`);
 
   if (docFiles.length === 0) {
-    console.log("⚠️  No documentation files found");
+    console.log("⚠  No documentation files found");
     process.exit(0);
   }
 
@@ -188,7 +213,7 @@ async function main() {
 
         const content = await getFileContent(REPO_OWNER, REPO_NAME, file.path);
         if (!content) {
-          console.warn(`⚠️  Skipping ${file.path}`);
+          console.warn(`⚠  Skipping ${file.path}`);
           return null;
         }
 
@@ -207,7 +232,7 @@ async function main() {
   const filesWithContent = results.filter((result) => result !== null);
 
   if (filesWithContent.length === 0) {
-    console.error("❌ No files were successfully downloaded");
+    console.error("✗ No files were successfully downloaded");
     process.exit(1);
   }
 
