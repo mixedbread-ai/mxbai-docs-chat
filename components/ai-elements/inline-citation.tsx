@@ -1,20 +1,14 @@
 "use client";
 
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import {
-  type ComponentProps,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { type ComponentProps, useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
-  type CarouselApi,
   CarouselContent,
   CarouselItem,
+  useCarousel,
 } from "@/components/ui/carousel";
 import {
   HoverCard,
@@ -89,13 +83,6 @@ export const InlineCitationCardBody = ({
   <HoverCardContent className={cn("relative w-80 p-0", className)} {...props} />
 );
 
-const CarouselApiContext = createContext<CarouselApi | undefined>(undefined);
-
-const useCarouselApi = () => {
-  const context = useContext(CarouselApiContext);
-  return context;
-};
-
 export type InlineCitationCarouselProps = ComponentProps<typeof Carousel>;
 
 export const InlineCitationCarousel = ({
@@ -103,14 +90,10 @@ export const InlineCitationCarousel = ({
   children,
   ...props
 }: InlineCitationCarouselProps) => {
-  const [api, setApi] = useState<CarouselApi>();
-
   return (
-    <CarouselApiContext.Provider value={api}>
-      <Carousel className={cn("w-full", className)} setApi={setApi} {...props}>
-        {children}
-      </Carousel>
-    </CarouselApiContext.Provider>
+    <Carousel className={cn("w-full", className)} {...props}>
+      {children}
+    </Carousel>
   );
 };
 
@@ -154,7 +137,7 @@ export const InlineCitationCarouselIndex = ({
   className,
   ...props
 }: InlineCitationCarouselIndexProps) => {
-  const api = useCarouselApi();
+  const { api } = useCarousel();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
 
@@ -190,24 +173,28 @@ export const InlineCitationCarouselPrev = ({
   className,
   ...props
 }: InlineCitationCarouselPrevProps) => {
-  const api = useCarouselApi();
+  const { scrollPrev, canScrollPrev } = useCarousel();
 
   const handleClick = useCallback(() => {
-    if (api) {
-      api.scrollPrev();
-    }
-  }, [api]);
+    scrollPrev();
+  }, [scrollPrev]);
 
   return (
-    <button
+    <Button
       aria-label="Previous"
-      className={cn("shrink-0", className)}
+      variant="ghost"
+      size="icon"
+      className={cn(
+        "size-4 text-muted-foreground hover:text-foreground",
+        className,
+      )}
       onClick={handleClick}
       type="button"
+      disabled={!canScrollPrev}
       {...props}
     >
-      <ArrowLeftIcon className="size-4 text-muted-foreground" />
-    </button>
+      <ArrowLeftIcon className="size-4" />
+    </Button>
   );
 };
 
@@ -217,24 +204,28 @@ export const InlineCitationCarouselNext = ({
   className,
   ...props
 }: InlineCitationCarouselNextProps) => {
-  const api = useCarouselApi();
+  const { scrollNext, canScrollNext } = useCarousel();
 
   const handleClick = useCallback(() => {
-    if (api) {
-      api.scrollNext();
-    }
-  }, [api]);
+    scrollNext();
+  }, [scrollNext]);
 
   return (
-    <button
+    <Button
       aria-label="Next"
-      className={cn("shrink-0", className)}
+      variant="ghost"
+      size="icon"
+      className={cn(
+        "size-4 text-muted-foreground hover:text-foreground",
+        className,
+      )}
       onClick={handleClick}
       type="button"
+      disabled={!canScrollNext}
       {...props}
     >
-      <ArrowRightIcon className="size-4 text-muted-foreground" />
-    </button>
+      <ArrowRightIcon className="size-4" />
+    </Button>
   );
 };
 
@@ -257,7 +248,14 @@ export const InlineCitationSource = ({
       <h4 className="truncate font-medium text-sm leading-tight">{title}</h4>
     )}
     {url && (
-      <p className="truncate break-all text-muted-foreground text-xs">{url}</p>
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="truncate break-all text-muted-foreground text-xs block hover:underline underline-offset-2"
+      >
+        {url}
+      </a>
     )}
     {description && (
       <p className="line-clamp-3 text-muted-foreground text-sm leading-relaxed">

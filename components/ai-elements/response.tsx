@@ -1,8 +1,30 @@
 "use client";
 
-import { type ComponentProps, isValidElement, memo } from "react";
+import {
+  type ComponentProps,
+  createContext,
+  isValidElement,
+  memo,
+  use,
+  useMemo,
+} from "react";
 import type { Options } from "react-markdown";
 import { Streamdown } from "streamdown";
+import {
+  InlineCitationCarousel,
+  InlineCitationCarouselContent,
+  InlineCitationCarouselHeader,
+  InlineCitationCarouselIndex,
+  InlineCitationCarouselItem,
+  InlineCitationCarouselNext,
+  InlineCitationCarouselPrev,
+  InlineCitationSource,
+} from "@/components/ai-elements/inline-citation";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
 import { CodeBlock, CodeBlockCopyButton } from "./code-block";
 
@@ -10,12 +32,83 @@ type ResponseProps = ComponentProps<typeof Streamdown>;
 
 const LANGUAGE_REGEX = /language-([^\s]+)/;
 
+interface Reference {
+  title: string;
+  url: string;
+}
+
+const ReferencesContext = createContext<Map<string, Reference>>(new Map());
+
+function useReferences() {
+  return use(ReferencesContext);
+}
+
+function parseReferences(markdown: string): Map<string, Reference> {
+  const references = new Map<string, Reference>();
+
+  // Match the References section and extract individual references
+  // Format: [1] [Title](URL)
+  const referencesMatch = markdown.match(
+    /##\s*References\s*([\s\S]*?)(?=\n##|\n$|$)/i,
+  );
+
+  if (referencesMatch) {
+    const referencesText = referencesMatch[1];
+    // Match pattern: [number] [title](url)
+    const referenceRegex = /\[(\d+)\]\s*\[([^\]]+)\]\(([^)]+)\)/g;
+
+    const matches = Array.from(referencesText.matchAll(referenceRegex));
+    for (const match of matches) {
+      const [, number, title, url] = match;
+      references.set(number, { title, url });
+    }
+  }
+
+  return references;
+}
+
 const createComponents = (): Options["components"] => ({
-  sup: ({ node, children, className, ...props }) => (
-    <sup className={cn("text-logo text-xs", className)} {...props}>
-      {children}
-    </sup>
-  ),
+  sup: ({ node, children, className, ...props }) => {
+    const references = useReferences();
+
+    // Extract citation numbers from children (e.g., "[1]" or "[1,2]")
+    const citationText = String(children);
+    const citationNumbers = citationText.match(/\d+/g) || [];
+
+    const citationRefs = citationNumbers
+      .map((num) => references.get(num))
+      .filter((ref) => !!ref);
+
+    return (
+      <HoverCard openDelay={300} closeDelay={300}>
+        <HoverCardTrigger asChild>
+          <sup
+            className={cn("text-xs text-logo cursor-help", className)}
+            {...props}
+          >
+            {children}
+          </sup>
+        </HoverCardTrigger>
+
+        <HoverCardContent className="w-72 p-0">
+          <InlineCitationCarousel opts={{ duration: 10 }}>
+            <InlineCitationCarouselHeader>
+              <InlineCitationCarouselPrev />
+              <InlineCitationCarouselNext />
+              <InlineCitationCarouselIndex />
+            </InlineCitationCarouselHeader>
+            <InlineCitationCarouselContent>
+              {citationRefs.map((ref) => (
+                <InlineCitationCarouselItem key={ref.url}>
+                  <InlineCitationSource title={ref.title} url={ref.url} />
+                </InlineCitationCarouselItem>
+              ))}
+            </InlineCitationCarouselContent>
+          </InlineCitationCarousel>
+        </HoverCardContent>
+      </HoverCard>
+    );
+  },
   ol: ({ node, children, className, ...props }) => (
     <ol className={cn("ml-4 list-outside list-decimal", className)} {...props}>
       {children}
@@ -185,19 +278,31 @@ const createComponents = (): Options["components"] => ({
   },
 });
 
+const components = createComponents();
+
 export const Response = memo(
-  ({ className, ...props }: ResponseProps) => {
-    const components = createComponents();
+  ({ className, children, ...props }: ResponseProps) => {
+    const references = useMemo(
+      () =>
+        typeof children === "string"
+          ? parseReferences(children)
+          : new Map<string, Reference>(),
+      [children],
+    );
 
     return (
-      <Streamdown
-        className={cn(
-          "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
-          className,
-        )}
-        components={components}
-        {...props}
-      />
+      <ReferencesContext.Provider value={references}>
+        <Streamdown
+          className={cn(
+            "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+            className,
+          )}
+          components={components}
+          {...props}
+        >
+          {children}
+        </Streamdown>
+      </ReferencesContext.Provider>
     );
   },
   (prevProps, nextProps) => prevProps.children === nextProps.children,
