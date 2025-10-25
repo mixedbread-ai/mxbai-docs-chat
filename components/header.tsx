@@ -11,20 +11,23 @@ export function Header() {
       <div className="container mx-auto flex items-center h-12 px-4 justify-between">
         <Link href="/">
           <MxbaiLogoIcon className="size-7" />
+          <span className="sr-only">Home</span>
         </Link>
 
         <div className="flex items-center">
           <Link
             href="https://mixedbread.com"
             target="_blank"
+            rel="noopener"
             className={cn(buttonVariants({ variant: "ghost" }), "px-3")}
           >
             Mixedbread
           </Link>
 
           <Link
-            href="https://github.com/mixedbread-ai/mxbai-chat"
+            href="https://github.com/mixedbread-ai/mxbai-docs-chat"
             target="_blank"
+            rel="noopener"
             className={buttonVariants({ variant: "ghost", size: "icon" })}
           >
             <GitHubLogoIcon className="size-4" />
