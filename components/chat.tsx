@@ -45,14 +45,14 @@ export function Chat() {
 
   return (
     <ChatScrollArea messages={messages} isStreaming={status === "streaming"}>
-      <div className="max-w-[95vw] w-2xl mx-auto">
+      <div className="mx-auto w-2xl max-w-[95vw]">
         <div
           className={cn(
-            "flex flex-col h-svh justify-center gap-6",
+            "flex h-svh flex-col justify-center gap-6",
             messages.length > 0 && "hidden",
           )}
         >
-          <h1 className="text-4xl text-center tracking-tight">
+          <h1 className="text-center text-4xl tracking-tight">
             Next.js Docs Chat
           </h1>
 
@@ -64,7 +64,7 @@ export function Chat() {
             />
           </div>
 
-          <Suggestions className="flex-wrap w-full justify-center">
+          <Suggestions className="w-full flex-wrap justify-center">
             {SUGGESTIONS.map((suggestion) => (
               <Suggestion
                 key={suggestion}
@@ -75,12 +75,12 @@ export function Chat() {
             ))}
           </Suggestions>
 
-          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-6 justify-center">
+          <div className="-translate-x-1/2 fixed bottom-10 left-1/2 flex items-center justify-center gap-6">
             <Link
               href="https://github.com/mixedbread-ai/mxbai-docs-chat?tab=readme-ov-file#mixedbread-docs-chat"
               target="_blank"
               rel="noopener"
-              className="text-muted-foreground underline underline-offset-4 decoration-1 hover:text-foreground transition-[color]"
+              className="text-muted-foreground underline decoration-1 underline-offset-4 transition-[color] hover:text-foreground"
             >
               Guide
             </Link>
@@ -89,7 +89,7 @@ export function Chat() {
               href="https://mixedbread.com"
               target="_blank"
               rel="noopener"
-              className="text-muted-foreground underline underline-offset-4 decoration-1 hover:text-foreground transition-[color]"
+              className="text-muted-foreground underline decoration-1 underline-offset-4 transition-[color] hover:text-foreground"
             >
               Mixedbread
             </Link>

@@ -156,18 +156,18 @@ export const CodeBlockCopyButton = ({
         <>
           <CheckIcon
             className={cn(
-              "size-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+              "-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 size-4 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
               isCopied
-                ? "opacity-100 scale-100 blur-none"
-                : "opacity-0 scale-50 blur-xs",
+                ? "scale-100 opacity-100 blur-none"
+                : "scale-50 opacity-0 blur-xs",
             )}
           />
           <CopyIcon
             className={cn(
-              "size-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+              "-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 size-4 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
               isCopied
-                ? "opacity-0 scale-50 blur-xs"
-                : "opacity-100 scale-100 blur-none",
+                ? "scale-50 opacity-0 blur-xs"
+                : "scale-100 opacity-100 blur-none",
             )}
           />
         </>

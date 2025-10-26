@@ -252,7 +252,7 @@ export const InlineCitationSource = ({
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="truncate break-all text-muted-foreground text-xs block hover:underline underline-offset-2"
+        className="block truncate break-all text-muted-foreground text-xs underline-offset-2 hover:underline"
       >
         {url}
       </a>

@@ -31,7 +31,7 @@ const messageContentVariants = cva(
           "group-[.is-assistant]:bg-secondary group-[.is-assistant]:text-foreground",
         ],
         flat: [
-          "group-[.is-user]:max-w-[80%] group-[.is-user]:bg-secondary group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-assistant]:py-1 group-[.is-user]:text-foreground",
+          "group-[.is-user]:max-w-[80%] group-[.is-user]:bg-secondary group-[.is-user]:px-4 group-[.is-assistant]:py-1 group-[.is-user]:py-3 group-[.is-user]:text-foreground",
           "group-[.is-assistant]:text-foreground",
         ],
       },
@@ -52,8 +52,8 @@ export const MessageContent = ({
   ...props
 }: MessageContentProps) => (
   <div className="flex flex-1 gap-4 group-[.is-user]:justify-end">
-    <div className="bg-secondary hidden group-[.is-assistant]:flex size-8 shrink-0 items-center justify-center rounded-full">
-      <MxbaiLogoIcon className="size-4 " />
+    <div className="hidden size-8 shrink-0 items-center justify-center rounded-full bg-secondary group-[.is-assistant]:flex">
+      <MxbaiLogoIcon className="size-4" />
     </div>
 
     <div

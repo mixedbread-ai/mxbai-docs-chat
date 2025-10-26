@@ -83,7 +83,7 @@ const createComponents = (): Options["components"] => ({
       <HoverCard openDelay={300} closeDelay={300}>
         <HoverCardTrigger asChild>
           <sup
-            className={cn("text-xs text-logo cursor-help", className)}
+            className={cn("cursor-help text-logo text-xs", className)}
             {...props}
           >
             {children}

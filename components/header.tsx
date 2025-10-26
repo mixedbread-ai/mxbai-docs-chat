@@ -7,8 +7,8 @@ import { buttonVariants } from "./ui/button";
 
 export function Header() {
   return (
-    <header className="fixed top-0 z-10 inset-x-0 bg-background backdrop-blur-md supports-backdrop-filter:bg-background/80">
-      <div className="container mx-auto flex items-center h-12 px-4 justify-between">
+    <header className="fixed inset-x-0 top-0 z-10 bg-background backdrop-blur-md supports-backdrop-filter:bg-background/80">
+      <div className="container mx-auto flex h-12 items-center justify-between px-4">
         <Link href="/">
           <MxbaiLogoIcon className="size-7" />
           <span className="sr-only">Home</span>
