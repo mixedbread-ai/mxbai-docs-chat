@@ -98,7 +98,7 @@ export function Chat() {
 
         <div className={cn(messages.length === 0 && "hidden")}>
           <Conversation>
-            <ConversationContent className="p-0 pt-12 pb-36">
+            <ConversationContent className="p-0 pt-14 pb-36">
               {messages.map((message, index) => {
                 return (
                   <ConversationMessage
@@ -150,6 +150,21 @@ function PromptInputForm({ sendMessage, status, stop }: PromptInputFormProps) {
       if (chatInputRef.current) chatInputRef.current.style.height = "auto";
     }
   }
+
+  // Auto-focus the textarea on mount and whenever the user presses any key
+  useEffect(() => {
+    if (!chatInputRef.current) return;
+
+    function focusInput() {
+      chatInputRef.current?.focus();
+    }
+
+    focusInput();
+
+    window.addEventListener("keydown", focusInput);
+
+    return () => window.removeEventListener("keydown", focusInput);
+  }, []);
 
   useEffect(() => {
     const formElement = chatInputRef.current?.closest("form");

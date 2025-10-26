@@ -61,7 +61,10 @@ export function ConversationMessage({
 
   return (
     <Message from={message.role} key={message.id}>
-      <MessageContent variant="flat">
+      <MessageContent
+        variant="flat"
+        className="group-[.is-assistant]:max-w-[calc(95vw-var(--spacing)*12)]"
+      >
         {!content.length && isStreaming ? (
           <Shimmer className="text-sm">Thinking...</Shimmer>
         ) : (

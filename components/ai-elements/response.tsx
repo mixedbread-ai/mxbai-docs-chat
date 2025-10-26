@@ -21,10 +21,10 @@ import {
   InlineCitationSource,
 } from "@/components/ai-elements/inline-citation";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+  ResponsiveHoverCard,
+  ResponsiveHoverCardContent,
+  ResponsiveHoverCardTrigger,
+} from "@/components/ui/responsive-hover-card";
 import { cn } from "@/lib/utils";
 import { CodeBlock, CodeBlockCopyButton } from "./code-block";
 
@@ -80,17 +80,17 @@ const createComponents = (): Options["components"] => ({
       .filter((ref) => !!ref);
 
     return (
-      <HoverCard openDelay={300} closeDelay={300}>
-        <HoverCardTrigger asChild>
+      <ResponsiveHoverCard openDelay={300} closeDelay={300}>
+        <ResponsiveHoverCardTrigger asChild>
           <sup
             className={cn("cursor-help text-logo text-xs", className)}
             {...props}
           >
             {children}
           </sup>
-        </HoverCardTrigger>
+        </ResponsiveHoverCardTrigger>
 
-        <HoverCardContent className="w-72 p-0">
+        <ResponsiveHoverCardContent className="w-72 p-0">
           <InlineCitationCarousel opts={{ duration: 10 }}>
             <InlineCitationCarouselHeader>
               <InlineCitationCarouselPrev />
@@ -105,8 +105,8 @@ const createComponents = (): Options["components"] => ({
               ))}
             </InlineCitationCarouselContent>
           </InlineCitationCarousel>
-        </HoverCardContent>
-      </HoverCard>
+        </ResponsiveHoverCardContent>
+      </ResponsiveHoverCard>
     );
   },
   ol: ({ node, children, className, ...props }) => (
