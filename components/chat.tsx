@@ -77,7 +77,7 @@ export function Chat() {
 
         <div className={cn(messages.length === 0 && "hidden")}>
           <Conversation>
-            <ConversationContent className="p-0 pt-12 pb-32">
+            <ConversationContent className="p-0 pt-12 pb-36">
               {messages.map((message, index) => {
                 return (
                   <ConversationMessage

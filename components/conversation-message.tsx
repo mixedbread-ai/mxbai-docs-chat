@@ -1,9 +1,18 @@
 "use client";
 
-import type { ChatStatus, UIMessage } from "ai";
+import type { ChatStatus, TextUIPart, UIMessage } from "ai";
+import {
+  CheckIcon,
+  CopyIcon,
+  ThumbsDownIcon,
+  ThumbsUpIcon,
+} from "lucide-react";
+import { useRef, useState } from "react";
 import { Message, MessageContent } from "@/components/ai-elements/message";
 import { Response } from "@/components/ai-elements/response";
 import { Shimmer } from "@/components/ai-elements/shimmer";
+import { cn } from "@/lib/utils";
+import { Action, Actions } from "./ai-elements/actions";
 
 interface ConversationMessageProps {
   message: UIMessage;
@@ -16,16 +25,44 @@ export function ConversationMessage({
   isLastMessage,
   chatStatus,
 }: ConversationMessageProps) {
+  const [copied, setCopied] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const isStreaming =
     chatStatus === "streaming" && isLastMessage && message.role === "assistant";
-  const hasContent = message.parts.some(
-    (part) => part.type === "text" && part.text,
+  const textParts = message.parts.filter(
+    (part): part is TextUIPart => part.type === "text" && !!part.text,
   );
+  const content = textParts.map((part) => part.text).join("\n\n");
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(content);
+    setCopied(true);
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    timeoutRef.current = setTimeout(() => {
+      setCopied(false);
+      timeoutRef.current = null;
+    }, 2000);
+  }
+
+  function handleLike() {
+    setLiked((prev) => !prev);
+    if (disliked) setDisliked(false);
+  }
+
+  function handleDislike() {
+    setDisliked((prev) => !prev);
+    if (liked) setLiked(false);
+  }
 
   return (
     <Message from={message.role} key={message.id}>
       <MessageContent variant="flat">
-        {!hasContent && isStreaming ? (
+        {!content.length && isStreaming ? (
           <Shimmer className="text-sm">Thinking...</Shimmer>
         ) : (
           message.parts.map(
@@ -39,6 +76,61 @@ export function ConversationMessage({
                 </Response>
               ),
           )
+        )}
+        {message.role === "assistant" && !isStreaming && (
+          <Actions className="mt-3">
+            <Action
+              label="Copy"
+              tooltip="Copy"
+              className="size-8"
+              onClick={handleCopy}
+            >
+              <CheckIcon
+                className={cn(
+                  "size-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+                  copied
+                    ? "opacity-100 scale-100 blur-none"
+                    : "opacity-0 scale-50 blur-xs",
+                )}
+              />
+              <CopyIcon
+                className={cn(
+                  "size-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+                  copied
+                    ? "opacity-0 scale-50 blur-xs"
+                    : "opacity-100 scale-100 blur-none",
+                )}
+              />
+            </Action>
+
+            <Action
+              label="Good response"
+              tooltip="Good response"
+              className="size-8 hover:text-muted-foreground"
+              onClick={handleLike}
+            >
+              <ThumbsUpIcon
+                className={cn(
+                  "size-4",
+                  liked ? "fill-muted-foreground" : "fill-none",
+                )}
+              />
+            </Action>
+
+            <Action
+              label="Bad response"
+              tooltip="Bad response"
+              className="size-8 hover:text-muted-foreground"
+              onClick={handleDislike}
+            >
+              <ThumbsDownIcon
+                className={cn(
+                  "size-4",
+                  disliked ? "fill-muted-foreground" : "fill-none",
+                )}
+              />
+            </Action>
+          </Actions>
         )}
       </MessageContent>
     </Message>
