@@ -1,3 +1,5 @@
+import "server-only";
+
 import Mixedbread from "@mixedbread/sdk";
 
 export const mxbai = new Mixedbread({

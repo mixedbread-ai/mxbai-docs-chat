@@ -1,6 +1,6 @@
 # Mixedbread Docs Chat
 
-A starter template for building AI documentation chatbot using AI SDK and [Mixedbread Search](https://www.mixedbread.com/blog/mixedbread-search).
+A Next.js starter template for building AI documentation chatbot using AI SDK and [Mixedbread Search](https://www.mixedbread.com/blog/mixedbread-search).
 
 ## Getting Started
 
@@ -36,6 +36,8 @@ Add your credentials to the `.env` file:
 MXBAI_API_KEY=your-api-key-here
 MXBAI_STORE_ID=your-store-id
 GEMINI_API_KEY=your-api-key-here
+# Optional: Increase GitHub API rate limits
+GITHUB_TOKEN=your-github-token-here
 ```
 
 **To get your API key and Store ID, you have two options:**
@@ -54,11 +56,13 @@ GEMINI_API_KEY=your-api-key-here
 
 ### 4. Upload Documentation Files to Store
 
-Run this script to upload all Next.js documentation files to your Mixedbread Store:
+This script fetches the Next.js documentation from GitHub and uploads it to your Mixedbread Store for semantic search:
 
 ```bash
 bun ingest-docs
 ```
+
+> **Note**: By default, this ingests Next.js documentation from the official repository. See the [Customization](#customization) section below to index your own documentation.
 
 ### 5. Run the Application
 
@@ -68,6 +72,42 @@ Start the development server:
 bun dev
 ```
 
+## Customization
+
+### Using Your Own Documentation
+
+To index your own documentation instead of Next.js docs, modify `scripts/ingest-docs.ts`:
+
+1. **Change the repository settings**:
+```typescript
+const REPO_OWNER = "your-org";
+const REPO_NAME = "your-repo";
+const REPO_BRANCH = "main"; // or your default branch
+const DOCS_PATH = "docs"; // path to your docs folder
+```
+
+2. **Update the source URL construction** in the `constructSourceUrl()` function to match your documentation site structure.
+
+3. **Adjust file extensions** if needed:
+```typescript
+const VALID_EXTENSIONS = [".md", ".mdx"]; // add other formats if needed
+```
+
+4. Run the ingestion script:
+```bash
+bun ingest-docs
+```
+
+### Alternative: Upload Local Documentation Files
+
+If want to upload your local documentation files, you can use the [Mixedbread CLI](https://www.mixedbread.com/cli) to upload them directly to your Store.
+
+### Customizing the LLM Behavior
+
+Edit `app/api/chat/route.ts` to customize:
+- **System Prompt**: Modify the `SYSTEM_PROMPT` constant to change the LLM's behavior and instructions
+- **Model**: Change the `model` variable if you want to use a different LLM
+
 ## Learn More
 
 ### Mixedbread Resources
@@ -75,3 +115,7 @@ bun dev
 - [Mixedbread Documentation](https://www.mixedbread.com/docs) - Learn about Mixedbread's features and APIs
 - [Quickstart Guide](https://www.mixedbread.com/docs/quickstart) - Get started with creating Stores and uploading files
 - [Mixedbread Discord](https://discord.gg/fCpaq2dr) - Join the community and get support
+
+## License
+
+This project is licensed under the [MIT License](LICENSE.md).

@@ -1,7 +1,7 @@
+import "server-only";
+
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
-const google = createGoogleGenerativeAI({
+export const google = createGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
-
-export const googleGenerativeAI = google;

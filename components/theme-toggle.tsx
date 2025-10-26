@@ -12,8 +12,13 @@ export function ThemeToggle() {
   }
 
   return (
-    <Button variant="ghost" size="icon" onClick={toggleTheme}>
-      <Half2Icon className="size-4" />
+    <Button
+      variant="ghost"
+      size="icon"
+      className="text-muted-foreground"
+      onClick={toggleTheme}
+    >
+      <Half2Icon className="size-4.25" />
       <span className="sr-only">Toggle theme</span>
     </Button>
   );

@@ -14,17 +14,17 @@ type ScoredChunk =
   | ScoredVideoURLInputChunk;
 
 function getChunkText(chunk: ScoredChunk): string {
-  if ("text" in chunk && chunk.text) {
+  if (chunk.type === "text" && chunk.text) {
     return chunk.text;
   }
-  if ("transcription" in chunk && chunk.transcription) {
+  if (chunk.type === "audio_url" && chunk.transcription) {
     return chunk.transcription;
   }
-  if ("ocr_text" in chunk && chunk.ocr_text) {
+  if (chunk.type === "image_url" && chunk.ocr_text) {
     return chunk.ocr_text;
   }
-  if ("summary" in chunk && chunk.summary) {
-    return chunk.summary;
+  if (chunk.type === "video_url" && chunk.transcription) {
+    return chunk.transcription;
   }
   return "Non-text content";
 }
@@ -67,8 +67,8 @@ export const searchStoreTool = {
 
       const results = res.data.map((chunk: ScoredChunk) => {
         const metadata = {
-          ...(chunk.metadata || {}),
           ...chunk.generated_metadata,
+          ...(chunk.metadata || {}),
         };
 
         return {

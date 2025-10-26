@@ -6,7 +6,7 @@ import {
   type ToolSet,
   type UIMessage,
 } from "ai";
-import { googleGenerativeAI } from "@/lib/google";
+import { google } from "@/lib/google";
 import { searchStoreTool } from "@/lib/tools";
 
 export const maxDuration = 60;
@@ -156,7 +156,7 @@ export async function POST(req: Request) {
   const modelMessages = convertToModelMessages(messages);
 
   const result = streamText({
-    model: googleGenerativeAI(model),
+    model: google(model),
     system: SYSTEM_PROMPT,
     maxOutputTokens: 8192,
     messages: modelMessages,

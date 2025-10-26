@@ -2,6 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { type ChatStatus, DefaultChatTransport } from "ai";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   Conversation,
@@ -73,6 +74,26 @@ export function Chat() {
               />
             ))}
           </Suggestions>
+
+          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-6 justify-center">
+            <Link
+              href="https://github.com/mixedbread-ai/mxbai-docs-chat?tab=readme-ov-file#mixedbread-docs-chat"
+              target="_blank"
+              rel="noopener"
+              className="text-muted-foreground underline underline-offset-4 decoration-1 hover:text-foreground transition-[color]"
+            >
+              Guide
+            </Link>
+
+            <Link
+              href="https://mixedbread.com"
+              target="_blank"
+              rel="noopener"
+              className="text-muted-foreground underline underline-offset-4 decoration-1 hover:text-foreground transition-[color]"
+            >
+              Mixedbread
+            </Link>
+          </div>
         </div>
 
         <div className={cn(messages.length === 0 && "hidden")}>
@@ -152,7 +173,7 @@ function PromptInputForm({ sendMessage, status, stop }: PromptInputFormProps) {
           ref={chatInputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask a question..."
+          placeholder="Ask a question about Next.js..."
           className="thin-scrollbar min-h-11"
         />
       </PromptInputBody>

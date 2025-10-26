@@ -14,21 +14,15 @@ export function Header() {
           <span className="sr-only">Home</span>
         </Link>
 
-        <div className="flex items-center">
-          <Link
-            href="https://mixedbread.com"
-            target="_blank"
-            rel="noopener"
-            className={cn(buttonVariants({ variant: "ghost" }), "px-3")}
-          >
-            Mixedbread
-          </Link>
-
+        <div className="flex items-center gap-1">
           <Link
             href="https://github.com/mixedbread-ai/mxbai-docs-chat"
             target="_blank"
             rel="noopener"
-            className={buttonVariants({ variant: "ghost", size: "icon" })}
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "icon" }),
+              "text-muted-foreground",
+            )}
           >
             <GitHubLogoIcon className="size-4" />
             <span className="sr-only">GitHub Repo</span>
