@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { type ChatStatus, DefaultChatTransport } from "ai";
+import { type ChatStatus, DefaultChatTransport, type UIMessage } from "ai";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -19,7 +19,7 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import { ChatScrollArea } from "@/components/chat-scroll-area";
-import { ConversationMessage } from "@/components/conversation-message";
+import { PromptResponse } from "@/components/prompt-response";
 import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = [
@@ -42,6 +42,15 @@ export function Chat() {
   function handleSuggestionClick(suggestion: string) {
     sendMessage({ text: suggestion });
   }
+
+  const promptResponses = messages.reduce((acc, message) => {
+    if (message.role === "user") {
+      acc.push([message]);
+    } else {
+      acc[acc.length - 1].push(message);
+    }
+    return acc;
+  }, [] as UIMessage[][]);
 
   return (
     <ChatScrollArea messages={messages} isStreaming={status === "streaming"}>
@@ -99,13 +108,17 @@ export function Chat() {
         <div className={cn(messages.length === 0 && "hidden")}>
           <Conversation>
             <ConversationContent className="p-0 pt-14 pb-36">
-              {messages.map((message, index) => {
+              {promptResponses.map((promptResponse, index) => {
                 return (
-                  <ConversationMessage
-                    key={message.id}
-                    message={message}
+                  <PromptResponse
+                    key={promptResponse[0].id}
+                    promptResponse={promptResponse}
                     chatStatus={status}
-                    isLastMessage={index === messages.length - 1}
+                    isLastMessage={
+                      messages[messages.length - 1].id ===
+                      promptResponse[promptResponse.length - 1].id
+                    }
+                    isLastPromptResponse={index === promptResponses.length - 1}
                   />
                 );
               })}
@@ -142,24 +155,48 @@ function PromptInputForm({ sendMessage, status, stop }: PromptInputFormProps) {
     e: React.FormEvent<HTMLFormElement>,
   ) {
     e.preventDefault();
-    if (input.trim()) {
-      sendMessage({ text: input });
-      setInput("");
-      (e.target as HTMLFormElement).reset();
-      // Reset the height of the textarea
-      if (chatInputRef.current) chatInputRef.current.style.height = "auto";
-    }
+    if (status === "streaming" || !input.trim()) return;
+
+    sendMessage({ text: input });
+    setInput("");
+    (e.target as HTMLFormElement).reset();
+    // Reset the height of the textarea
+    if (chatInputRef.current) chatInputRef.current.style.height = "auto";
   }
 
   // Auto-focus the textarea on mount and whenever the user presses any key
   useEffect(() => {
     if (!chatInputRef.current) return;
 
-    function focusInput() {
+    function focusInput(e: KeyboardEvent) {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      if (
+        [
+          "Enter",
+          "Escape",
+          "Tab",
+          "Shift",
+          "Control",
+          "Meta",
+          "Alt",
+          "CapsLock",
+        ].includes(e.key) ||
+        e.key.startsWith("Arrow") ||
+        e.key.startsWith("F") // Function keys (F1-F12)
+      ) {
+        return;
+      }
+
       chatInputRef.current?.focus();
     }
 
-    focusInput();
+    chatInputRef.current?.focus();
 
     window.addEventListener("keydown", focusInput);
 
