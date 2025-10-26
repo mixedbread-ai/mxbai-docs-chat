@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mixedbread Docs Chat
+
+A starter template for building AI documentation chatbot using AI SDK and [Mixedbread Search](https://www.mixedbread.com/blog/mixedbread-search).
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Bun (or Node.js 22+)
+- Git
+
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+git clone https://github.com/mixedbread-ai/mxbai-docs-chat
+cd mxbai-docs-chat
+```
+
+### 2. Install Dependencies
+
+```bash
+bun install
+```
+
+### 3. Set Up Environment Variables
+
+Create a `.env` file in the root directory:
+
+```bash
+cp .env.example .env
+```
+
+Add your credentials to the `.env` file:
+
+```env
+MXBAI_API_KEY=your-api-key-here
+MXBAI_STORE_ID=your-store-id
+GEMINI_API_KEY=your-api-key-here
+```
+
+**To get your API key and Store ID, you have two options:**
+
+1. **From Vercel Integration** (Recommended if deploying to Vercel):
+   - Go to your [Vercel dashboard](https://vercel.com/dashboard)
+   - Navigate to your project's **Integrations** tab
+   - Install or access the [Mixedbread integration](https://vercel.com/marketplace/mixedbread)
+   - Copy your API key and Store ID from the integration settings
+
+2. **From Mixedbread Platform** (For standalone use):
+   - Visit the [Mixedbread Platform](https://platform.mixedbread.com/platform?next=api-keys)
+   - Sign up or log in to your account
+   - Navigate to **API Keys** and create a new key
+   - Navigate to **Stores** and create a new Store, then copy the Store ID
+
+### 4. Upload Documentation Files to Store
+
+Run this script to upload all Next.js documentation files to your Mixedbread Store:
+
+```bash
+bun ingest-docs
+```
+
+### 5. Run the Application
+
+Start the development server:
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+### Mixedbread Resources
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Mixedbread Documentation](https://www.mixedbread.com/docs) - Learn about Mixedbread's features and APIs
+- [Quickstart Guide](https://www.mixedbread.com/docs/quickstart) - Get started with creating Stores and uploading files
+- [Mixedbread Discord](https://discord.gg/fCpaq2dr) - Join the community and get support
