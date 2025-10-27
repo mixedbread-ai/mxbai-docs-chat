@@ -109,6 +109,18 @@ async function getFileContent(
   return await response.text();
 }
 
+async function checkStoreFiles(storeId: string): Promise<number> {
+  try {
+    const store = await mxbai.stores.retrieve(storeId);
+    return store.file_counts?.total || 0;
+  } catch (error) {
+    console.error(
+      `⚠  Failed to check store: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+    return 0;
+  }
+}
+
 async function uploadToStore(
   storeId: string,
   files: Array<{ path: string; content: string }>,
@@ -182,6 +194,18 @@ async function main() {
   }
 
   const storeId = process.env.MXBAI_STORE_ID;
+
+  // Check if store already has files
+  console.log("🔍 Checking store status...");
+  const fileCount = await checkStoreFiles(storeId);
+
+  if (fileCount > 0) {
+    console.log(`✓ Store already contains ${fileCount} files`);
+    console.log("ℹ️  Skipping ingestion to avoid duplicates.\n");
+    process.exit(0);
+  }
+
+  console.log("✓ Store is empty, proceeding with ingestion\n");
 
   console.log(
     `📥 Fetching docs from ${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}/${DOCS_PATH}...`,
