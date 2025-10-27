@@ -796,11 +796,68 @@ export const PromptInputTextarea = ({
   onChange,
   className,
   placeholder = "What would you like to know?",
+  ref,
   ...props
 }: PromptInputTextareaProps) => {
   const controller = useOptionalPromptInputController();
   const attachments = usePromptInputAttachments();
   const [isComposing, setIsComposing] = useState(false);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(
+    (ref as RefObject<HTMLTextAreaElement>)?.current,
+  );
+
+  // Auto-focus the textarea on mount and whenever the user presses any key
+  useEffect(() => {
+    if (!textareaRef.current) return;
+
+    function focusInput(e: KeyboardEvent) {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      if (
+        [
+          "Enter",
+          "Escape",
+          "Tab",
+          "Shift",
+          "Control",
+          "Meta",
+          "Alt",
+          "CapsLock",
+        ].includes(e.key) ||
+        e.key.startsWith("Arrow") ||
+        e.key.startsWith("F") // Function keys (F1-F12)
+      ) {
+        return;
+      }
+
+      textareaRef.current?.focus();
+    }
+
+    textareaRef.current?.focus();
+
+    window.addEventListener("keydown", focusInput);
+
+    return () => window.removeEventListener("keydown", focusInput);
+  }, []);
+
+  // Focus the textarea when the form is clicked
+  useEffect(() => {
+    const formElement = textareaRef.current?.closest("form");
+
+    function focusInput() {
+      textareaRef.current?.focus();
+    }
+
+    formElement?.addEventListener("click", focusInput);
+
+    return () => formElement?.removeEventListener("click", focusInput);
+  }, []);
 
   const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === "Enter") {
@@ -866,6 +923,7 @@ export const PromptInputTextarea = ({
 
   return (
     <InputGroupTextarea
+      ref={textareaRef}
       className={cn("field-sizing-content max-h-48 min-h-16", className)}
       name="message"
       onCompositionEnd={() => setIsComposing(false)}

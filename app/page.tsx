@@ -1,9 +1,9 @@
-import { Chat } from "@/components/chat";
+import { LandingChat } from "@/components/landing-chat";
 
 export default function Home() {
   return (
-    <main className="flex justify-center">
-      <Chat />
+    <main>
+      <LandingChat />
     </main>
   );
 }
