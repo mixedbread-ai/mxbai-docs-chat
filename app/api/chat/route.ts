@@ -169,8 +169,8 @@ export async function POST(req: Request) {
       },
     },
     experimental_transform: smoothStream({
-      chunking: "line",
-      delayInMs: 50, // 40ms is the minimum delay for the stream to be smooth
+      chunking: "word",
+      delayInMs: 15,
     }),
     tools: { searchStore: searchStoreTool } as ToolSet,
     stopWhen: stepCountIs(3), // Allow up to 3 steps: tool call -> tool result -> text generation
