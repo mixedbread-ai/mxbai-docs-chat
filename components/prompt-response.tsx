@@ -18,13 +18,7 @@ export function PromptResponse({
   const [prompt, response] = promptResponse;
 
   return (
-    <div
-      className={cn(
-        isLastPromptResponse
-          ? "min-h-[calc(100svh-var(--spacing)*14-var(--spacing)*36)]"
-          : "min-h-0",
-      )}
-    >
+    <div className={cn(isLastPromptResponse ? "min-h-[50svh]" : "min-h-0")}>
       <ConversationMessage
         message={prompt}
         isLastMessage={isLastMessage}
