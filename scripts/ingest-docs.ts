@@ -39,11 +39,8 @@ function getGitHubHeaders() {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github.v3+json",
     "User-Agent": "mxbai-docs-chat",
+    Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
   };
-
-  if (process.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-  }
 
   return headers;
 }
@@ -175,6 +172,12 @@ async function main() {
   if (!process.env.MXBAI_STORE_ID) {
     console.error("✗ MXBAI_STORE_ID environment variable is not set");
     console.log("Please add MXBAI_STORE_ID to your .env file");
+    process.exit(1);
+  }
+
+  if (!process.env.GITHUB_TOKEN) {
+    console.error("✗ GITHUB_TOKEN environment variable is not set");
+    console.log("Please add GITHUB_TOKEN to your .env file");
     process.exit(1);
   }
 

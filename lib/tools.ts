@@ -5,6 +5,7 @@ import type {
   ScoredVideoURLInputChunk,
 } from "@mixedbread/sdk/resources";
 import { z } from "zod";
+import { env } from "@/env";
 import { mxbai } from "@/lib/mxbai";
 
 type ScoredChunk =
@@ -48,13 +49,7 @@ export const searchStoreTool = {
     returnMetadata: boolean;
   }) => {
     try {
-      const storeId = process.env.MXBAI_STORE_ID;
-
-      if (!storeId) {
-        return {
-          error: "No store ID provided and environment not configured",
-        };
-      }
+      const storeId = env.MXBAI_STORE_ID;
 
       const res = await mxbai.stores.search({
         query,

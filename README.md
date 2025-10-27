@@ -38,7 +38,6 @@ Add your credentials to the `.env` file:
 MXBAI_API_KEY=your-api-key-here
 MXBAI_STORE_ID=your-store-id
 GEMINI_API_KEY=your-api-key-here
-# Optional: Increase GitHub API rate limits
 GITHUB_TOKEN=your-github-token-here
 ```
 
