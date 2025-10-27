@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   PromptInput,
   PromptInputBody,
@@ -23,6 +23,10 @@ export function LandingChat() {
     setInitialMessage(suggestion);
     router.push("/chat");
   }
+
+  useEffect(() => {
+    router.prefetch("/chat");
+  }, [router]);
 
   return (
     <div>
