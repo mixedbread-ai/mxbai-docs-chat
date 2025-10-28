@@ -1,5 +1,6 @@
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ConversationProvider } from "@/contexts/conversation-context";
 import { InitialMessageProvider } from "@/contexts/initial-message-context";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -11,7 +12,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
     >
       <TooltipProvider>
-        <InitialMessageProvider>{children}</InitialMessageProvider>
+        <InitialMessageProvider>
+          <ConversationProvider>{children}</ConversationProvider>
+        </InitialMessageProvider>
       </TooltipProvider>
     </ThemeProvider>
   );
