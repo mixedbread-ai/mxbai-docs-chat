@@ -25,7 +25,7 @@ export function InitialMessageProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [initialMessage, setInitialMessage] = useState<string>("");
+  const [initialMessage, setInitialMessage] = useState("");
 
   return (
     <InitialMessageContext.Provider

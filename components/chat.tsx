@@ -18,11 +18,13 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { ChatScrollArea } from "@/components/chat-scroll-area";
 import { PromptResponse } from "@/components/prompt-response";
+import { useConversation } from "@/contexts/conversation-context";
 import { useInitialMessage } from "@/contexts/initial-message-context";
 
 export function Chat() {
   const isInitRef = useRef(true);
   const { initialMessage } = useInitialMessage();
+  const { setConversation } = useConversation();
   const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
@@ -48,6 +50,21 @@ export function Chat() {
     }
     return acc;
   }, [] as UIMessage[][]);
+
+  useEffect(() => {
+    const conversationContent = messages
+      .reduce((acc, message) => {
+        message.parts.forEach((part) => {
+          if (part.type === "text") {
+            acc.push(part.text);
+          }
+        });
+        return acc;
+      }, [] as string[])
+      .join("\n\n");
+
+    setConversation(conversationContent);
+  }, [messages, setConversation]);
 
   return (
     <ChatScrollArea messages={messages} isStreaming={status === "streaming"}>
