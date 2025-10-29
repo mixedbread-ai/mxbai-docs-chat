@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CursorLogoIcon } from "@/components/icons/cursor-logo-icon";
+import { V0LogoIcon } from "@/components/icons/v0-logo-icon";
 import { buttonVariants } from "@/components/ui/button";
 import { useConversation } from "@/contexts/conversation-context";
 import { cn, generateWebPromptDeeplink } from "@/lib/utils";
 
-export function OpenInCursorLink() {
+export function OpenInV0Link() {
   const pathname = usePathname();
   const { conversation } = useConversation();
   if (!conversation || pathname === "/") return null;
@@ -19,8 +19,8 @@ export function OpenInCursorLink() {
       rel="noopener"
       className={cn(buttonVariants({ size: "sm" }))}
     >
-      <CursorLogoIcon className="size-4" />
-      Open in Cursor
+      <V0LogoIcon className="size-4.5" />
+      Open in v0
     </Link>
   );
 }

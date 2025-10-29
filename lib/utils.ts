@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function generateWebPromptDeeplink(promptText: string): string {
-  const url = new URL("https://cursor.com/link/prompt");
-  url.searchParams.set("text", promptText);
+  const url = new URL("https://v0.dev");
+  url.searchParams.set("q", promptText);
   return url.toString();
 }

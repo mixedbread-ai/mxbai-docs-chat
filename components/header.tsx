@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { GitHubLogoIcon } from "@/components/icons/github-logo-icon";
 import { MxbaiLogoIcon } from "@/components/icons/mxbai-logo-icon";
-import { OpenInCursorLink } from "@/components/open-in-cursor-link";
+import { OpenInV0Link } from "@/components/open-in-v0-link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ export function Header() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <OpenInCursorLink />
+          <OpenInV0Link />
 
           <Link
             href="https://github.com/mixedbread-ai/mxbai-docs-chat"
