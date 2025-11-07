@@ -172,6 +172,48 @@ async function uploadToStore(
   );
 }
 
+async function pollForCompletion(storeId: string) {
+  console.log("\n⏳ Waiting for files to be processed...");
+
+  let lastCount = -1;
+  let lastLogTime = Date.now();
+  const LOG_INTERVAL = 30000; // Log every 30 seconds
+
+  while (true) {
+    try {
+      const response = await mxbai.stores.files.list(storeId, {
+        statuses: ["in_progress"],
+      });
+
+      const pendingCount = response.data?.length || 0;
+
+      // Log if count changed or 30 seconds have passed
+      const now = Date.now();
+      if (pendingCount !== lastCount || now - lastLogTime >= LOG_INTERVAL) {
+        if (pendingCount > 0) {
+          console.log(
+            `  Waiting for ${pendingCount} file${pendingCount === 1 ? "" : "s"} to be processed...`,
+          );
+        }
+        lastCount = pendingCount;
+        lastLogTime = now;
+      }
+
+      if (pendingCount === 0) {
+        console.log("✓ All files have been processed!");
+        break;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    } catch (error) {
+      console.error(
+        `⚠  Error checking file status: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+  }
+}
+
 async function main() {
   console.log("🚀 Starting documentation ingestion...\n");
 
@@ -266,6 +308,8 @@ async function main() {
   console.log(`✓ Downloaded ${filesWithContent.length} files\n`);
 
   await uploadToStore(storeId, filesWithContent);
+
+  await pollForCompletion(storeId);
 
   console.log("\n✨ Success! Documentation has been ingested.");
 }
