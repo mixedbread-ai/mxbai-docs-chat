@@ -65,6 +65,8 @@ This script fetches the Next.js documentation from GitHub and uploads it to your
 bun ingest-docs
 ```
 
+> **Note**: If you're on the free plan, your Store has a limit of 100 files. The Next.js documentation exceeds this limit, so not all files will be ingested. The docs chat will not know about files that were not ingested and won't be able to answer questions related to those topics. Consider upgrading your plan or using your own smaller documentation set.
+
 > **Note**: By default, this ingests Next.js documentation from the official repository. See the [Customization](#customization) section below to index your own documentation.
 
 ### 5. Run the Application
