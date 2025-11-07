@@ -141,7 +141,7 @@ async function uploadToStore(
           const filename = file.path.split("/").pop() || "file.mdx";
           const fileObj = new File([blob], filename, { type: "text/markdown" });
 
-          await mxbai.stores.files.uploadAndPoll({
+          await mxbai.stores.files.upload({
             storeIdentifier: storeId,
             file: fileObj,
             body: {
